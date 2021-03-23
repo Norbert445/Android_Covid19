@@ -7,11 +7,10 @@
     tools:context=".ui.MainActivity">
 
 
-
     <ImageView
         android:id="@+id/ivOval"
         android:layout_width="1224dp"
-        android:layout_height="350dp"
+        android:layout_height="220dp"
         android:src="@drawable/layout_pre_profil_hlavu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,24 +37,37 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <GridLayout
+        android:id="@+id/gridLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:translationY="-70dp"
+        android:layout_marginTop="20dp"
         android:clipToPadding="false"
         android:columnCount="2"
-        android:orientation="horizontal"
         android:padding="20dp"
-        android:rowCount="2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivOval">
+        app:layout_constraintTop_toBottomOf="@+id/textView">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="157dp"
-            android:layout_height="107dp"
+            android:layout_height="90dp"
             android:layout_marginRight="20dp"
-            android:background="#fff"
+            android:background="@drawable/white_rounded_corners"
             android:elevation="10dp">
+
+            <TextView
+                android:id="@+id/tvTotalCasesRes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="198456"
+                android:textColor="#39A3FF"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tvTotalCases"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvTotalCases"
@@ -70,10 +82,24 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="157dp"
-            android:layout_height="107dp"
+            android:layout_height="90dp"
             android:layout_marginLeft="10dp"
-            android:background="#fff"
+            android:background="@drawable/white_rounded_corners"
             android:elevation="10dp">
+
+            <TextView
+                android:id="@+id/tvTodayCasesRes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="198456"
+                android:textColor="#39A3FF"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tvTodayCases"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvTodayCases"
@@ -88,11 +114,25 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="157dp"
-            android:layout_height="107dp"
+            android:layout_height="90dp"
             android:layout_marginTop="20dp"
             android:layout_marginRight="10dp"
-            android:background="#fff"
+            android:background="@drawable/white_rounded_corners"
             android:elevation="10dp">
+
+            <TextView
+                android:id="@+id/tvCriticalRes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="198456"
+                android:textColor="#39A3FF"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tvCritical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvCritical"
@@ -107,11 +147,25 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="157dp"
-            android:layout_height="107dp"
+            android:layout_height="90dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="20dp"
-            android:background="#fff"
+            android:background="@drawable/white_rounded_corners"
             android:elevation="10dp">
+
+            <TextView
+                android:id="@+id/tvActiveRes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="198456"
+                android:textColor="#39A3FF"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tvActive"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvActive"
@@ -124,6 +178,91 @@
                 app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="157dp"
+            android:layout_height="90dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/green_rounded_corners"
+            android:elevation="10dp">
+
+            <TextView
+                android:id="@+id/tvRecoveredRes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="198456"
+                android:textColor="#fff"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tvRecovered"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvRecovered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="Recovered"
+                android:textColor="#fff"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="157dp"
+            android:layout_height="90dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/red_rounded_corners"
+            android:elevation="10dp">
+
+            <TextView
+                android:id="@+id/tvDeathsRes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="198456"
+                android:textColor="#fff"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tvDeaths"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvDeaths"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="Deaths"
+                android:textColor="#fff"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </GridLayout>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:background="@color/colorPrimary"
+        android:drawableRight="@drawable/change"
+        android:drawablePadding="10dp"
+        android:paddingLeft="30dp"
+        android:paddingTop="15dp"
+        android:paddingRight="30dp"
+        android:paddingBottom="15dp"
+        android:text="Zmeniť krajinu"
+        android:textColor="#fff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gridLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
