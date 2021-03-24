@@ -4,7 +4,9 @@ data class CovidData (
     val cases: Int,
     val todayCases: Int,
     val active: Int,
-    val critical: Int
+    val critical: Int,
+    val recovered: Int,
+    val deaths: Int
 )
 
 

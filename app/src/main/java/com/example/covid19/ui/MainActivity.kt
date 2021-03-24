@@ -1,5 +1,6 @@
 package com.example.covid19.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +24,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        btnZmenitKrajinu.setOnClickListener {
+            val intent = Intent(this,ChooseCountry::class.java)
+            startActivity(intent)
+        }
+
         val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -30,7 +36,7 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         val covidStats = retrofit.create(CovidStats::class.java)
-        covidStats.getAllStates().enqueue(object: Callback<CovidData> {
+        covidStats.getGlobalStatus().enqueue(object: Callback<CovidData> {
             override fun onFailure(call: Call<CovidData>?, t: Throwable?) {
                 Log.e(TAG,"On failure: $t")
             }
@@ -46,6 +52,8 @@ class MainActivity : AppCompatActivity() {
                 tvTodayCasesRes.text = data?.todayCases.toString()
                 tvActiveRes.text = data?.active.toString()
                 tvCriticalRes.text = data?.critical.toString()
+                tvRecoveredRes.text = data?.recovered.toString()
+                tvDeathsRes.text = data?.deaths.toString()
             }
         })
     }
