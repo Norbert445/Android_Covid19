@@ -4,11 +4,14 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.covid19.API.CovidStats
 import com.example.covid19.API.model.CovidData
+import com.example.covid19.Adapters.Adapter
 import com.example.covid19.R
 import com.example.covid19.utils.Constants.BASE_URL
 import com.google.gson.GsonBuilder
+import kotlinx.android.synthetic.main.activity_choose_country.*
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
