@@ -1,5 +1,6 @@
 package com.example.covid19.ui
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,7 +22,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        const val CHOOSE_COUNTRY_ACTIVITY_REQUEST_CODE = 0
+    }
+
     private val TAG = "MainActivity"
+    private lateinit var countryName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         btnZmenitKrajinu.setOnClickListener {
             val intent = Intent(this,ChooseCountry::class.java)
-            startActivity(intent)
+            startActivityForResult(intent, CHOOSE_COUNTRY_ACTIVITY_REQUEST_CODE)
         }
 
         val gson = GsonBuilder().create()
@@ -59,5 +65,17 @@ class MainActivity : AppCompatActivity() {
                 tvDeathsRes.text = data?.deaths.toString()
             }
         })
+    }
+
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(requestCode == CHOOSE_COUNTRY_ACTIVITY_REQUEST_CODE) {
+            if(resultCode == Activity.RESULT_OK) {
+                tvCountryName.text = data?.getStringExtra("countryName")
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
     }
 }

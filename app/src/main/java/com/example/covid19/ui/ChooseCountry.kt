@@ -1,9 +1,13 @@
 package com.example.covid19.ui
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity.apply
 import android.view.Menu
 import android.widget.SearchView
+import android.widget.Toast
 import android.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.covid19.Adapters.Adapter
@@ -11,7 +15,7 @@ import com.example.covid19.R
 import kotlinx.android.synthetic.main.activity_choose_country.*
 import java.util.*
 
-class ChooseCountry : AppCompatActivity() {
+class ChooseCountry : AppCompatActivity(), Adapter.OnItemClickListener {
 
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var data: MutableList<String>
@@ -25,7 +29,8 @@ class ChooseCountry : AppCompatActivity() {
         rvCountries.layoutManager = linearLayoutManager
 
         data = (resources.getStringArray(R.array.countries)).toMutableList()
-        adapter = Adapter(data)
+        adapter = Adapter(this)
+        adapter.setItems(data)
         rvCountries.adapter = adapter
 
         setSupportActionBar(toolbar as androidx.appcompat.widget.Toolbar)
@@ -55,19 +60,31 @@ class ChooseCountry : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                /*if(newText!!.isNotEmpty()) {
-                    val search = newText.toLowerCase(Locale.getDefault())
-                    data.forEach {
-                        if(it.toLowerCase(Locale.getDefault()).contains(search)) {
-                            data.add(it)
+                if(newText!= null) {
+                    val query = newText.toLowerCase(Locale.getDefault())
+                    var filteredList: MutableList<String> = arrayListOf()
+
+                    data.forEach{
+                        if(it.toLowerCase(Locale.getDefault()).contains(query)) {
+                            filteredList.add(it)
                         }
                     }
-                    rvCountries.adapter?.notifyDataSetChanged()
-                }*/
+                    adapter.setItems(filteredList)
+                    adapter.notifyDataSetChanged()
+                }
                 return true
             }
         })
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onItemClick(position: Int) {
+        val countryName = data[position]
+
+        val intent = Intent().apply {
+            putExtra("countryName",countryName)
+        }
+        setResult(Activity.RESULT_OK,intent)
     }
 }
