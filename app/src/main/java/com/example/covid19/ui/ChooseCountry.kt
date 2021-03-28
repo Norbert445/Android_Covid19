@@ -19,6 +19,7 @@ class ChooseCountry : AppCompatActivity(), Adapter.OnItemClickListener {
 
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var data: MutableList<String>
+    var filteredList: MutableList<String> = arrayListOf()
     private lateinit var adapter: Adapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +30,8 @@ class ChooseCountry : AppCompatActivity(), Adapter.OnItemClickListener {
         rvCountries.layoutManager = linearLayoutManager
 
         data = (resources.getStringArray(R.array.countries)).toMutableList()
+        filteredList = (resources.getStringArray(R.array.countries)).toMutableList()
+
         adapter = Adapter(this)
         adapter.setItems(data)
         rvCountries.adapter = adapter
@@ -62,8 +65,7 @@ class ChooseCountry : AppCompatActivity(), Adapter.OnItemClickListener {
             override fun onQueryTextChange(newText: String?): Boolean {
                 if(newText!= null) {
                     val query = newText.toLowerCase(Locale.getDefault())
-                    var filteredList: MutableList<String> = arrayListOf()
-
+                    filteredList.clear()
                     data.forEach{
                         if(it.toLowerCase(Locale.getDefault()).contains(query)) {
                             filteredList.add(it)
@@ -80,11 +82,12 @@ class ChooseCountry : AppCompatActivity(), Adapter.OnItemClickListener {
     }
 
     override fun onItemClick(position: Int) {
-        val countryName = data[position]
+        val countryName = filteredList[position]
 
         val intent = Intent().apply {
             putExtra("countryName",countryName)
         }
         setResult(Activity.RESULT_OK,intent)
+        finish()
     }
 }

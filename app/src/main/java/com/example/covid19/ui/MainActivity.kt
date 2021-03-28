@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = "MainActivity"
     private lateinit var countryName: String
+    private lateinit var covidStats: CovidStats
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
 
-        val covidStats = retrofit.create(CovidStats::class.java)
+        covidStats = retrofit.create(CovidStats::class.java)
         covidStats.getGlobalStatus().enqueue(object: Callback<CovidData> {
             override fun onFailure(call: Call<CovidData>?, t: Throwable?) {
                 Log.e(TAG,"On failure: $t")
@@ -72,7 +73,30 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(requestCode == CHOOSE_COUNTRY_ACTIVITY_REQUEST_CODE) {
             if(resultCode == Activity.RESULT_OK) {
-                tvCountryName.text = data?.getStringExtra("countryName")
+                val countryName = data?.getStringExtra("countryName")
+                tvCountryName.text = countryName
+                if (countryName != null) {
+                    covidStats.getCountryStatus(countryName).enqueue(object: Callback<CovidData> {
+                        override fun onFailure(call: Call<CovidData>?, t: Throwable?) {
+                            Log.e(TAG,"On failure: $t")
+                        }
+
+                        override fun onResponse(call: Call<CovidData>?, response: Response<CovidData>?) {
+                            Log.i(TAG,"On response: $response")
+                            val data = response?.body()
+                            if(data == null) {
+                                Log.w(TAG,"Didn't receive any message")
+                            }
+
+                            tvTotalCasesRes.text = data?.cases.toString()
+                            tvTodayCasesRes.text = data?.todayCases.toString()
+                            tvActiveRes.text = data?.active.toString()
+                            tvCriticalRes.text = data?.critical.toString()
+                            tvRecoveredRes.text = data?.recovered.toString()
+                            tvDeathsRes.text = data?.deaths.toString()
+                        }
+                    })
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data)
