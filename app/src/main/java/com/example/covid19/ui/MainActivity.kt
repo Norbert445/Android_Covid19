@@ -1,5 +1,7 @@
 package com.example.covid19.ui
 
+import android.app.AlertDialog
+import android.app.ProgressDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -31,25 +33,40 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         covidStats = retrofit.create(CovidStats::class.java)
+
         getGlobalData()
 
         btnZmenitKrajinu.setOnClickListener {
             val countryPicker = CountryPicker.newInstance("Vyberte si krajinu")
             countryPicker.setListener { name, code, dialCode, flagDrawableResID ->
-                tvCountryName.text = name
-                ivCountryFlag.setImageResource(flagDrawableResID)
+                val progressDialog = ProgressDialog(this@MainActivity)
+                progressDialog.setMessage("Načítava sa")
+                progressDialog.show()
 
                 covidStats.getCountryStatus(name).enqueue(object: Callback<CovidData> {
                     override fun onFailure(call: Call<CovidData>?, t: Throwable?) {
+                        progressDialog.dismiss()
                         Log.e(TAG,"On failure: $t")
                     }
 
                     override fun onResponse(call: Call<CovidData>?, response: Response<CovidData>?) {
-                        Log.i(TAG,"On response: $response")
                         val data = response?.body()
+
                         if(data == null) {
+                            val alertDialogBuilder = AlertDialog.Builder(this@MainActivity)
+                            alertDialogBuilder.setTitle("Error")
+                            alertDialogBuilder.setMessage("$name is not registered")
+                            alertDialogBuilder.setPositiveButton("Ok") { dialog,which ->
+                                dialog.dismiss()
+                            }
+                            alertDialogBuilder.show()
+                            progressDialog.dismiss()
                             Log.w(TAG,"Didn't receive any message")
+                            return
                         }
+
+                        tvCountryName.text = name
+                        ivCountryFlag.setImageResource(flagDrawableResID)
 
                         tvTotalCasesRes.text = data?.cases.toString()
                         tvTodayCasesRes.text = data?.todayCases.toString()
@@ -57,6 +74,9 @@ class MainActivity : AppCompatActivity() {
                         tvCriticalRes.text = data?.critical.toString()
                         tvRecoveredRes.text = data?.recovered.toString()
                         tvDeathsRes.text = data?.deaths.toString()
+
+                        progressDialog.dismiss()
+                        Log.i(TAG,"On response: $response")
                     }
                 })
 
@@ -73,15 +93,19 @@ class MainActivity : AppCompatActivity() {
     private fun getGlobalData() {
         if(tvCountryName.text.equals("Global Status")) return
 
+        val progressDialog = ProgressDialog(this@MainActivity)
+        progressDialog.setMessage("Načítava sa")
+        progressDialog.show()
+
         tvCountryName.text = "Global Status"
         ivCountryFlag.setImageResource(R.drawable.globe)
         covidStats.getGlobalStatus().enqueue(object: Callback<CovidData> {
             override fun onFailure(call: Call<CovidData>?, t: Throwable?) {
+                progressDialog.dismiss()
                 Log.e(TAG,"On failure: $t")
             }
 
             override fun onResponse(call: Call<CovidData>?, response: Response<CovidData>?) {
-                Log.i(TAG,"On response: $response")
                 val data = response?.body()
                 if(data == null) {
                     Log.w(TAG,"Didn't receive any message")
@@ -93,6 +117,10 @@ class MainActivity : AppCompatActivity() {
                 tvCriticalRes.text = data?.critical.toString()
                 tvRecoveredRes.text = data?.recovered.toString()
                 tvDeathsRes.text = data?.deaths.toString()
+
+                progressDialog.dismiss()
+
+                Log.i(TAG,"On response: $response")
             }
         })
     }
