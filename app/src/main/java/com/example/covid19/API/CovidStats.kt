@@ -1,6 +1,6 @@
 package com.example.covid19.API
 
-import com.example.covid19.API.model.CovidData
+import com.example.covid19.models.CovidData
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

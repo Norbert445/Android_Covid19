@@ -3,12 +3,17 @@ package com.example.covid19.ui
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.TYPE_ETHERNET
+import android.net.ConnectivityManager.TYPE_WIFI
+import android.net.NetworkCapabilities.*
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.telephony.TelephonyManager
+import android.provider.ContactsContract.CommonDataKinds.Email.TYPE_MOBILE
 import android.util.Log
 import com.example.covid19.API.CovidStats
-import com.example.covid19.API.model.CovidData
+import com.example.covid19.models.CovidData
 import com.example.covid19.R
 import com.example.covid19.utils.Constants.BASE_URL
 import com.google.gson.GsonBuilder
@@ -27,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
+
         val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -41,6 +46,20 @@ class MainActivity : AppCompatActivity() {
         btnZmenitKrajinu.setOnClickListener {
             val countryPicker = CountryPicker.newInstance("Vyberte si krajinu")
             countryPicker.setListener { name, code, dialCode, flagDrawableResID ->
+
+                if(!isOnline(this@MainActivity)) {
+                    countryPicker.dismiss()
+                    val alertDialogBuilder = AlertDialog.Builder(this@MainActivity)
+                    alertDialogBuilder.setTitle("Error")
+                    alertDialogBuilder.setMessage("No internet Connection")
+                    alertDialogBuilder.setPositiveButton("Ok") { dialog,which ->
+                        dialog.dismiss()
+                    }
+                    alertDialogBuilder.show()
+                    return@setListener
+                }
+
+
                 val progressDialog = ProgressDialog(this@MainActivity)
                 progressDialog.setMessage("Načítava sa")
                 progressDialog.show()
@@ -95,6 +114,17 @@ class MainActivity : AppCompatActivity() {
     private fun getGlobalData() {
         if(tvCountryName.text.equals("Global Status")) return
 
+        if(!isOnline(this@MainActivity)) {
+            val alertDialogBuilder = AlertDialog.Builder(this@MainActivity)
+            alertDialogBuilder.setTitle("Error")
+            alertDialogBuilder.setMessage("No internet Connection")
+            alertDialogBuilder.setPositiveButton("Ok") { dialog,which ->
+                getGlobalData()
+            }
+            alertDialogBuilder.show()
+            return
+        }
+
         val progressDialog = ProgressDialog(this@MainActivity)
         progressDialog.setMessage("Načítava sa")
         progressDialog.show()
@@ -125,5 +155,33 @@ class MainActivity : AppCompatActivity() {
                 Log.i(TAG,"On response: $response")
             }
         })
+    }
+
+    private fun isOnline(context: Context):Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            connectivityManager.let {
+                val networkCapabilites = it.getNetworkCapabilities(it.activeNetwork) ?: return false
+                return when {
+                    networkCapabilites.hasTransport(TRANSPORT_WIFI) -> true
+                    networkCapabilites.hasTransport(TRANSPORT_CELLULAR) -> true
+                    networkCapabilites.hasTransport(TRANSPORT_ETHERNET) -> true
+                    else -> false
+                }
+            }
+        } else {
+            connectivityManager.let {
+                it.activeNetworkInfo?.run {
+                    return when (type) {
+                        TYPE_WIFI -> true
+                        TYPE_MOBILE -> true
+                        TYPE_ETHERNET -> true
+                        else -> true
+                    }
+                }
+            }
+            return false
+        }
+
     }
 }
