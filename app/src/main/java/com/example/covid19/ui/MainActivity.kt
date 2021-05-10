@@ -12,12 +12,16 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract.CommonDataKinds.Email.TYPE_MOBILE
 import android.util.Log
+import androidx.activity.viewModels
 import com.example.covid19.API.CovidStats
 import com.example.covid19.models.CovidData
 import com.example.covid19.R
+import com.example.covid19.repository.MainRepository
 import com.example.covid19.utils.Constants.BASE_URL
+import com.example.covid19.viewModels.MainViewModel
 import com.google.gson.GsonBuilder
 import com.ybs.countrypicker.CountryPicker
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,15 +29,20 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
     private lateinit var covidStats: CovidStats
+
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val gson = GsonBuilder().create()
+        mainViewModel.getCovidData()
+
+        /*val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
@@ -108,10 +117,10 @@ class MainActivity : AppCompatActivity() {
 
         btnGlobalStatus.setOnClickListener {
             getGlobalData()
-        }
+        }*/
     }
 
-    private fun getGlobalData() {
+    /*private fun getGlobalData() {
         if(tvCountryName.text.equals("Global Status")) return
 
         if(!isOnline(this@MainActivity)) {
@@ -155,33 +164,5 @@ class MainActivity : AppCompatActivity() {
                 Log.i(TAG,"On response: $response")
             }
         })
-    }
-
-    private fun isOnline(context: Context):Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            connectivityManager.let {
-                val networkCapabilites = it.getNetworkCapabilities(it.activeNetwork) ?: return false
-                return when {
-                    networkCapabilites.hasTransport(TRANSPORT_WIFI) -> true
-                    networkCapabilites.hasTransport(TRANSPORT_CELLULAR) -> true
-                    networkCapabilites.hasTransport(TRANSPORT_ETHERNET) -> true
-                    else -> false
-                }
-            }
-        } else {
-            connectivityManager.let {
-                it.activeNetworkInfo?.run {
-                    return when (type) {
-                        TYPE_WIFI -> true
-                        TYPE_MOBILE -> true
-                        TYPE_ETHERNET -> true
-                        else -> true
-                    }
-                }
-            }
-            return false
-        }
-
-    }
+    }*/
 }
