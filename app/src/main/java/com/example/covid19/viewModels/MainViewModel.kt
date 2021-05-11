@@ -21,59 +21,22 @@ class MainViewModel @ViewModelInject constructor(
     @ApplicationContext var context: Context,
     val mainRepository: MainRepository
 ) : ViewModel() {
-
-    val covidData: MutableLiveData<Resource<CovidData>> = MutableLiveData()
-    val countryData: MutableLiveData<Resource<CovidData>> = MutableLiveData()
+    val covidData = mainRepository.covidData
+    val countryData = mainRepository.countryData
 
     fun getCovidData() {
-        covidData.postValue(Resource.Loading())
-        try {
-
-            if(isOnline()) {
-
-                /*val res = mainRepository.getCovidData()
-                if(res.enqueue()) {
-                    covidData.postValue(Resource.Success(res.body()))
-                } else {
-                    covidData.postValue(Resource.Error("Prepáčte, niečo sa pokazilo"))
-                    Timber.e(res.message())
-                }*/
-
-            } else {
-                covidData.postValue(Resource.Error("Skontrolujte pripojenie k sieti"))
-            }
-
-        } catch (t: Throwable) {
-            when (t) {
-                is IOException -> covidData.postValue(Resource.Error("Zlyhalo pripojenie"))
-                else -> covidData.postValue(Resource.Error("Prepáčte, niečo sa pokazilo"))
-            }
-            Timber.e(t)
+        if (isOnline()) {
+            mainRepository.getCovidData()
+        } else {
+            covidData.postValue(Resource.Error("Skontrolujte pripojenie k internetu"))
         }
     }
 
     fun getCountryData(country: String) {
-        countryData.postValue(Resource.Loading())
-        try {
-
-            if(isOnline()) {
-
-                /*val res = mainRepository.getCountryData(country)
-                if(res.isSuccessful) {
-                    countryData.postValue(Resource.Success(res.body()))
-                } else {
-                    countryData.postValue(Resource.Error("Prepáčte, niečo sa pokazilo"))
-                }*/
-
-            } else {
-                countryData.postValue(Resource.Error("Skontrolujte pripojenie k internetu"))
-            }
-
-        }catch(t: Throwable) {
-            when(t) {
-                is IOException -> countryData.postValue(Resource.Error("Zlyhalo pripojenie"))
-                else -> countryData.postValue(Resource.Error("Prepáčte, niečo sa pokazilo"))
-            }
+        if (isOnline()) {
+            mainRepository.getCountryData(country)
+        } else {
+            countryData.postValue(Resource.Error("Skontrolujte pripojenie k internetu"))
         }
     }
 

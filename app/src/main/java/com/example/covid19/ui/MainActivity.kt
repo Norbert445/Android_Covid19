@@ -11,6 +11,7 @@ import com.example.covid19.API.CovidStats
 import com.example.covid19.R
 import com.example.covid19.utils.Resource
 import com.example.covid19.viewModels.MainViewModel
+import com.ybs.countrypicker.CountryPicker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
                     progressDialog.show()
             }
         })
+
 
         /*val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()
