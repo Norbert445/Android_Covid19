@@ -8,6 +8,7 @@
     tools:context=".ui.MainActivity">
 
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
@@ -296,5 +297,4 @@
         app:layout_constraintEnd_toEndOf="@+id/btnZmenitKrajinu"
         app:layout_constraintStart_toStartOf="@+id/btnZmenitKrajinu"
         app:layout_constraintTop_toBottomOf="@+id/btnZmenitKrajinu" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

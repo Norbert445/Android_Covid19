@@ -1,46 +1,61 @@
 package com.example.covid19.ui
 
-import android.app.AlertDialog
+
 import android.app.ProgressDialog
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.ConnectivityManager.TYPE_ETHERNET
-import android.net.ConnectivityManager.TYPE_WIFI
-import android.net.NetworkCapabilities.*
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract.CommonDataKinds.Email.TYPE_MOBILE
-import android.util.Log
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Observer
 import com.example.covid19.API.CovidStats
-import com.example.covid19.models.CovidData
 import com.example.covid19.R
-import com.example.covid19.repository.MainRepository
-import com.example.covid19.utils.Constants.BASE_URL
+import com.example.covid19.utils.Resource
 import com.example.covid19.viewModels.MainViewModel
-import com.google.gson.GsonBuilder
-import com.ybs.countrypicker.CountryPicker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val TAG = "MainActivity"
-    private lateinit var covidStats: CovidStats
-
     private val mainViewModel: MainViewModel by viewModels()
+    lateinit var progressDialog: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        progressDialog = ProgressDialog(this@MainActivity)
+        progressDialog.setMessage("Načítava sa")
+
         mainViewModel.getCovidData()
+
+        mainViewModel.covidData.observe(this, Observer {
+            when (it) {
+                is Resource.Success -> {
+                    progressDialog.dismiss()
+
+                    tvTotalCasesRes.text = it.data?.cases.toString()
+                    tvTodayCasesRes.text = it.data?.todayCases.toString()
+                    tvActiveRes.text = it.data?.active.toString()
+                    tvCriticalRes.text = it.data?.critical.toString()
+                    tvRecoveredRes.text = it.data?.recovered.toString()
+                    tvDeathsRes.text = it.data?.deaths.toString()
+                }
+
+                is Resource.Error -> {
+                    progressDialog.dismiss()
+
+                    val alertDialogBuilder = AlertDialog.Builder(this@MainActivity)
+                    alertDialogBuilder.setTitle("Chyba")
+                    alertDialogBuilder.setMessage(it.message)
+                    alertDialogBuilder.setPositiveButton("Ok") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    alertDialogBuilder.show()
+                }
+                is Resource.Loading ->
+                    progressDialog.show()
+            }
+        })
 
         /*val gson = GsonBuilder().create()
         val retrofit = Retrofit.Builder()
@@ -120,49 +135,50 @@ class MainActivity : AppCompatActivity() {
         }*/
     }
 
-    /*private fun getGlobalData() {
-        if(tvCountryName.text.equals("Global Status")) return
+/*private fun getGlobalData() {
+    if(tvCountryName.text.equals("Global Status")) return
 
-        if(!isOnline(this@MainActivity)) {
-            val alertDialogBuilder = AlertDialog.Builder(this@MainActivity)
-            alertDialogBuilder.setTitle("Error")
-            alertDialogBuilder.setMessage("No internet Connection")
-            alertDialogBuilder.setPositiveButton("Ok") { dialog,which ->
-                getGlobalData()
-            }
-            alertDialogBuilder.show()
-            return
+    if(!isOnline(this@MainActivity)) {
+        val alertDialogBuilder = AlertDialog.Builder(this@MainActivity)
+        alertDialogBuilder.setTitle("Error")
+        alertDialogBuilder.setMessage("No internet Connection")
+        alertDialogBuilder.setPositiveButton("Ok") { dialog,which ->
+            getGlobalData()
+        }
+        alertDialogBuilder.show()
+        return
+    }
+
+    val progressDialog = ProgressDialog(this@MainActivity)
+    progressDialog.setMessage("Načítava sa")
+    progressDialog.show()
+
+    tvCountryName.text = "Global Status"
+    ivCountryFlag.setImageResource(R.drawable.globe)
+    covidStats.getGlobalStatus().enqueue(object: Callback<CovidData> {
+        override fun onFailure(call: Call<CovidData>?, t: Throwable?) {
+            progressDialog.dismiss()
+            Log.e(TAG,"On failure: $t")
         }
 
-        val progressDialog = ProgressDialog(this@MainActivity)
-        progressDialog.setMessage("Načítava sa")
-        progressDialog.show()
-
-        tvCountryName.text = "Global Status"
-        ivCountryFlag.setImageResource(R.drawable.globe)
-        covidStats.getGlobalStatus().enqueue(object: Callback<CovidData> {
-            override fun onFailure(call: Call<CovidData>?, t: Throwable?) {
-                progressDialog.dismiss()
-                Log.e(TAG,"On failure: $t")
+        override fun onResponse(call: Call<CovidData>?, response: Response<CovidData>?) {
+            val data = response?.body()
+            if(data == null) {
+                Log.w(TAG,"Didn't receive any message")
             }
 
-            override fun onResponse(call: Call<CovidData>?, response: Response<CovidData>?) {
-                val data = response?.body()
-                if(data == null) {
-                    Log.w(TAG,"Didn't receive any message")
-                }
+            tvTotalCasesRes.text = data?.cases.toString()
+            tvTodayCasesRes.text = data?.todayCases.toString()
+            tvActiveRes.text = data?.active.toString()
+            tvCriticalRes.text = data?.critical.toString()
+            tvRecoveredRes.text = data?.recovered.toString()
+            tvDeathsRes.text = data?.deaths.toString()
 
-                tvTotalCasesRes.text = data?.cases.toString()
-                tvTodayCasesRes.text = data?.todayCases.toString()
-                tvActiveRes.text = data?.active.toString()
-                tvCriticalRes.text = data?.critical.toString()
-                tvRecoveredRes.text = data?.recovered.toString()
-                tvDeathsRes.text = data?.deaths.toString()
+            progressDialog.dismiss()
 
-                progressDialog.dismiss()
+            Log.i(TAG,"On response: $response")
+        }
+    })
+}*/
 
-                Log.i(TAG,"On response: $response")
-            }
-        })
-    }*/
 }

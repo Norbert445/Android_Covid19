@@ -81,4 +81,10 @@ dependencies {
     //Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
+    //Lifecycles
+    implementation "androidx.lifecycle:lifecycle-runtime:2.3.1"
+
+    //Live Data
+    implementation "androidx.lifecycle:lifecycle-livedata:2.3.1"
+
 }
