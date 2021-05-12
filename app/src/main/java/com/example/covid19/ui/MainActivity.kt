@@ -7,7 +7,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
-import com.example.covid19.API.CovidStats
 import com.example.covid19.R
 import com.example.covid19.utils.Resource
 import com.example.covid19.viewModels.MainViewModel
@@ -19,13 +18,14 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     lateinit var progressDialog: ProgressDialog
+    lateinit var lastCountry: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         progressDialog = ProgressDialog(this@MainActivity)
-        progressDialog.setMessage("Načítava sa")
+        progressDialog.setMessage("Loading...")
 
         mainViewModel.getCovidData()
 
@@ -46,86 +46,87 @@ class MainActivity : AppCompatActivity() {
                     progressDialog.dismiss()
 
                     val alertDialogBuilder = AlertDialog.Builder(this@MainActivity)
-                    alertDialogBuilder.setTitle("Chyba")
+                    alertDialogBuilder.setTitle("Error")
                     alertDialogBuilder.setMessage(it.message)
-                    alertDialogBuilder.setPositiveButton("Ok") { dialog, which ->
-                        dialog.dismiss()
+                    alertDialogBuilder.setCancelable(false)
+                    if(it.message == "Check internet connection") {
+                        alertDialogBuilder.setPositiveButton("Try again") { dialog, which ->
+                            mainViewModel.getCovidData()
+                            dialog.dismiss()
+                        }
+                    } else {
+                        alertDialogBuilder.setPositiveButton("Ok") { dialog, which ->
+                            dialog.dismiss()
+                        }
                     }
+
                     alertDialogBuilder.show()
+
+                    tvTotalCasesRes.text = "${0}"
+                    tvTodayCasesRes.text = "${0}"
+                    tvActiveRes.text = "${0}"
+                    tvCriticalRes.text = "${0}"
+                    tvRecoveredRes.text = "${0}"
+                    tvDeathsRes.text = "${0}"
                 }
                 is Resource.Loading ->
                     progressDialog.show()
             }
         })
 
+        mainViewModel.countryData.observe(this, Observer {
+            when (it) {
+                is Resource.Success -> {
+                    progressDialog.dismiss()
 
-        /*val gson = GsonBuilder().create()
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-
-        covidStats = retrofit.create(CovidStats::class.java)
-
-        getGlobalData()
-
-        btnZmenitKrajinu.setOnClickListener {
-            val countryPicker = CountryPicker.newInstance("Vyberte si krajinu")
-            countryPicker.setListener { name, code, dialCode, flagDrawableResID ->
-
-                if(!isOnline(this@MainActivity)) {
-                    countryPicker.dismiss()
-                    val alertDialogBuilder = AlertDialog.Builder(this@MainActivity)
-                    alertDialogBuilder.setTitle("Error")
-                    alertDialogBuilder.setMessage("No internet Connection")
-                    alertDialogBuilder.setPositiveButton("Ok") { dialog,which ->
-                        dialog.dismiss()
-                    }
-                    alertDialogBuilder.show()
-                    return@setListener
+                    tvTotalCasesRes.text = it.data?.cases.toString()
+                    tvTodayCasesRes.text = it.data?.todayCases.toString()
+                    tvActiveRes.text = it.data?.active.toString()
+                    tvCriticalRes.text = it.data?.critical.toString()
+                    tvRecoveredRes.text = it.data?.recovered.toString()
+                    tvDeathsRes.text = it.data?.deaths.toString()
                 }
 
+                is Resource.Error -> {
+                    progressDialog.dismiss()
 
-                val progressDialog = ProgressDialog(this@MainActivity)
-                progressDialog.setMessage("Načítava sa")
-                progressDialog.show()
-
-                covidStats.getCountryStatus(name).enqueue(object: Callback<CovidData> {
-                    override fun onFailure(call: Call<CovidData>?, t: Throwable?) {
-                        progressDialog.dismiss()
-                        Log.e(TAG,"On failure: $t")
-                    }
-
-                    override fun onResponse(call: Call<CovidData>?, response: Response<CovidData>?) {
-                        val data = response?.body()
-
-                        if(data == null) {
-                            val alertDialogBuilder = AlertDialog.Builder(this@MainActivity)
-                            alertDialogBuilder.setTitle("Error")
-                            alertDialogBuilder.setMessage("$name is not registered")
-                            alertDialogBuilder.setPositiveButton("Ok") { dialog,which ->
-                                dialog.dismiss()
-                            }
-                            alertDialogBuilder.show()
-                            progressDialog.dismiss()
-                            Log.w(TAG,"Didn't receive any message")
-                            return
+                    val alertDialogBuilder = AlertDialog.Builder(this@MainActivity)
+                    alertDialogBuilder.setTitle("Error")
+                    alertDialogBuilder.setMessage(it.message)
+                    alertDialogBuilder.setCancelable(false)
+                    if(it.message == "Check internet connection") {
+                        alertDialogBuilder.setPositiveButton("Try again") { dialog, which ->
+                            mainViewModel.getCountryData(lastCountry)
+                            dialog.dismiss()
                         }
-
-                        tvCountryName.text = name
-                        ivCountryFlag.setImageResource(flagDrawableResID)
-
-                        tvTotalCasesRes.text = data?.cases.toString()
-                        tvTodayCasesRes.text = data?.todayCases.toString()
-                        tvActiveRes.text = data?.active.toString()
-                        tvCriticalRes.text = data?.critical.toString()
-                        tvRecoveredRes.text = data?.recovered.toString()
-                        tvDeathsRes.text = data?.deaths.toString()
-
-                        progressDialog.dismiss()
-                        Log.i(TAG,"On response: $response")
+                    } else {
+                        alertDialogBuilder.setPositiveButton("Ok") { dialog, which ->
+                            dialog.dismiss()
+                        }
                     }
-                })
+
+                    alertDialogBuilder.show()
+
+                    tvTotalCasesRes.text = "${0}"
+                    tvTodayCasesRes.text = "${0}"
+                    tvActiveRes.text = "${0}"
+                    tvCriticalRes.text = "${0}"
+                    tvRecoveredRes.text = "${0}"
+                    tvDeathsRes.text = "${0}"
+                }
+                is Resource.Loading ->
+                    progressDialog.show()
+            }
+        })
+
+        btnZmenitKrajinu.setOnClickListener {
+            val countryPicker = CountryPicker.newInstance("Choose country")
+            countryPicker.setListener { name, code, dialCode, flagDrawableResID ->
+                mainViewModel.getCountryData(name)
+
+                tvCountryName.text = name
+                ivCountryFlag.setImageResource(flagDrawableResID)
+                lastCountry = name
 
                 countryPicker.dismiss()
             }
@@ -133,54 +134,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnGlobalStatus.setOnClickListener {
-            getGlobalData()
-        }*/
+            mainViewModel.getCovidData()
+
+            tvCountryName.text = "Global status"
+            ivCountryFlag.setImageResource(R.drawable.globe)
+        }
     }
-
-/*private fun getGlobalData() {
-    if(tvCountryName.text.equals("Global Status")) return
-
-    if(!isOnline(this@MainActivity)) {
-        val alertDialogBuilder = AlertDialog.Builder(this@MainActivity)
-        alertDialogBuilder.setTitle("Error")
-        alertDialogBuilder.setMessage("No internet Connection")
-        alertDialogBuilder.setPositiveButton("Ok") { dialog,which ->
-            getGlobalData()
-        }
-        alertDialogBuilder.show()
-        return
-    }
-
-    val progressDialog = ProgressDialog(this@MainActivity)
-    progressDialog.setMessage("Načítava sa")
-    progressDialog.show()
-
-    tvCountryName.text = "Global Status"
-    ivCountryFlag.setImageResource(R.drawable.globe)
-    covidStats.getGlobalStatus().enqueue(object: Callback<CovidData> {
-        override fun onFailure(call: Call<CovidData>?, t: Throwable?) {
-            progressDialog.dismiss()
-            Log.e(TAG,"On failure: $t")
-        }
-
-        override fun onResponse(call: Call<CovidData>?, response: Response<CovidData>?) {
-            val data = response?.body()
-            if(data == null) {
-                Log.w(TAG,"Didn't receive any message")
-            }
-
-            tvTotalCasesRes.text = data?.cases.toString()
-            tvTodayCasesRes.text = data?.todayCases.toString()
-            tvActiveRes.text = data?.active.toString()
-            tvCriticalRes.text = data?.critical.toString()
-            tvRecoveredRes.text = data?.recovered.toString()
-            tvDeathsRes.text = data?.deaths.toString()
-
-            progressDialog.dismiss()
-
-            Log.i(TAG,"On response: $response")
-        }
-    })
-}*/
-
 }

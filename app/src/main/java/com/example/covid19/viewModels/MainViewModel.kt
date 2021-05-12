@@ -23,12 +23,13 @@ class MainViewModel @ViewModelInject constructor(
 ) : ViewModel() {
     val covidData = mainRepository.covidData
     val countryData = mainRepository.countryData
+    val countryName = mainRepository.countryName
 
     fun getCovidData() {
         if (isOnline()) {
             mainRepository.getCovidData()
         } else {
-            covidData.postValue(Resource.Error("Skontrolujte pripojenie k internetu"))
+            covidData.postValue(Resource.Error("Check internet connection"))
         }
     }
 
@@ -36,7 +37,7 @@ class MainViewModel @ViewModelInject constructor(
         if (isOnline()) {
             mainRepository.getCountryData(country)
         } else {
-            countryData.postValue(Resource.Error("Skontrolujte pripojenie k internetu"))
+            countryData.postValue(Resource.Error("Check internet connection"))
         }
     }
 
