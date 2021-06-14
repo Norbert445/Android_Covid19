@@ -98,7 +98,6 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="250dp"
             android:layout_height="160dp"
-            android:layout_marginLeft="10dp"
             android:background="@drawable/white_rounded_corners"
             android:elevation="10dp">
 
@@ -165,7 +164,6 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="250dp"
             android:layout_height="160dp"
-            android:layout_marginLeft="10dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/white_rounded_corners"
             android:elevation="10dp">
@@ -233,7 +231,6 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="250dp"
             android:layout_height="160dp"
-            android:layout_marginLeft="10dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/red_rounded_corners"
             android:elevation="10dp">

@@ -78,12 +78,12 @@ class MainActivity : AppCompatActivity() {
                 is Resource.Success -> {
                     progressDialog.dismiss()
 
-                    tvTotalCasesRes.text = it.data?.cases.toString()
-                    tvTodayCasesRes.text = it.data?.todayCases.toString()
-                    tvActiveRes.text = it.data?.active.toString()
-                    tvCriticalRes.text = it.data?.critical.toString()
-                    tvRecoveredRes.text = it.data?.recovered.toString()
-                    tvDeathsRes.text = it.data?.deaths.toString()
+                    tvTotalCasesRes.text = String.format("%,d", it.data?.cases)
+                    tvTodayCasesRes.text = String.format("%,d", it.data?.todayCases)
+                    tvActiveRes.text = String.format("%,d", it.data?.active)
+                    tvCriticalRes.text = String.format("%,d", it.data?.critical)
+                    tvRecoveredRes.text = String.format("%,d", it.data?.recovered)
+                    tvDeathsRes.text = String.format("%,d", it.data?.deaths)
                 }
 
                 is Resource.Error -> {
@@ -123,15 +123,15 @@ class MainActivity : AppCompatActivity() {
                 is Resource.Success -> {
                     progressDialog.dismiss()
 
-                    tvTotalCasesRes.text = it.data?.cases.toString()
-                    tvTodayCasesRes.text = it.data?.todayCases.toString()
-                    tvActiveRes.text = it.data?.active.toString()
-                    tvCriticalRes.text = it.data?.critical.toString()
-                    tvRecoveredRes.text = it.data?.recovered.toString()
-                    tvDeathsRes.text = it.data?.deaths.toString()
+                    tvTotalCasesRes.text = String.format("%,d", it.data?.cases)
+                    tvTodayCasesRes.text = String.format("%,d", it.data?.todayCases)
+                    tvActiveRes.text = String.format("%,d", it.data?.active)
+                    tvCriticalRes.text = String.format("%,d", it.data?.critical)
+                    tvRecoveredRes.text = String.format("%,d", it.data?.recovered)
+                    tvDeathsRes.text = String.format("%,d", it.data?.deaths)
 
                     if(lastCountry == "") return@Observer
-                    
+
                     saveToSharedPref(lastCountry)
                     saveToSharedPref(lastCountryImage)
                 }
